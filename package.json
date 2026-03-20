@@ -1,0 +1,47 @@
+{
+  "name": "devil-backend-nodejs",
+  "version": "1.0.1",
+  "description": "A production-ready Node.js + Express + MongoDB backend boilerplate CLI",
+  "main": "index.js",
+  "bin": {
+    "devil-backend-nodejs": "bin/cli.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "mongoose",
+    "jwt",
+    "backend",
+    "boilerplate",
+    "cli",
+    "mern",
+    "scaffold"
+  ],
+  "author": "Sachin Tiwari",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.6.3",
+    "dotenv": "^16.3.1",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "cookie-parser": "^1.4.6",
+    "compression": "^1.7.4",
+    "hpp": "^0.2.3",
+    "multer": "^1.4.5-lts.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "cross-env": "^7.0.3"
+  }
+}
