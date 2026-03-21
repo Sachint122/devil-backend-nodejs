@@ -1,48 +1,48 @@
-/**
- * devil-backend-nodejs
- * Importable utilities for use in existing projects
- *
- * Usage:
- * const { ApiError, ApiResponse, asyncHandler, paginate } = require('devil-backend-nodejs');
- */
+﻿const { asyncHandler }        = require('./src/utils/asyncHandler.js');
+const { paginate }            = require('./src/utils/paginate.js');
+const { ApiError }            = require('./src/utils/ApiError.js');
+const { ApiResponse }         = require('./src/utils/ApiResponse.js');
+const { generateToken }       = require('./src/utils/generateToken.js');
+const { generateOTP }         = require('./src/utils/generateOTP.js');
+const { randomString }        = require('./src/utils/randomString.js');
+const { validateEnv }         = require('./src/utils/validateEnv.js');
+const { calculatePagination } = require('./src/utils/calculatePagination.js');
+const { slugify }             = require('./src/utils/slugify.js');
+const { capitalize }          = require('./src/utils/capitalize.js');
+const { capitalizeWords }     = require('./src/utils/capitalizeWords.js');
+const { formatDate }          = require('./src/utils/formatDate.js');
+const { timeAgo }             = require('./src/utils/timeAgo.js');
+const { pick }                = require('./src/utils/pick.js');
+const { exclude }             = require('./src/utils/exclude.js');
+const { isEmptyObject }       = require('./src/utils/isEmptyObject.js');
 
-const ApiError = require('./src/utils/ApiError');
-const ApiResponse = require('./src/utils/ApiResponse');
-const asyncHandler = require('./src/helpers/asyncHandler');
-const paginate = require('./src/helpers/paginate');
-const { generateAccessToken, generateRefreshToken, setTokenCookies } = require('./src/utils/generateToken');
-const connectDB = require('./src/config/db');
-const constants = require('./src/config/constants');
-const errorHandler = require('./src/middleware/errorHandlerMiddleware');
-const { protect } = require('./src/middleware/authMiddleware');
-const checkRole = require('./src/middleware/roleCheckMiddleware');
-const { globalLimiter, authLimiter, passwordResetLimiter } = require('./src/middleware/rateLimiter');
+const { uploadToCloudinary, uploadImageToCloudinary, deleteFromCloudinary, getCloudinary }        = require('./src/helpers/cloudinary.js');
+const { createOrder, verifyPayment, getRazorpay }                                                 = require('./src/helpers/razorpay.js');
+const { createPaymentIntent, constructWebhookEvent, getStripe }                                   = require('./src/helpers/stripe.js');
+const { sendEmail: sendGmail, sendOTPEmail: sendOTPGmail, sendWelcomeEmail: sendWelcomeGmail }     = require('./src/helpers/gmail.js');
+const { sendEmail: sendBrevo, sendOTPEmail: sendOTPBrevo, sendWelcomeEmail: sendWelcomeBrevo }     = require('./src/helpers/brevo.js');
 
 module.exports = {
   // Utils
-  ApiError,
-  ApiResponse,
+  asyncHandler, paginate, ApiError, ApiResponse,
+  generateToken, generateOTP, randomString,
+  validateEnv, calculatePagination,
+  slugify, capitalize, capitalizeWords,
+  formatDate, timeAgo,
+  pick, exclude, isEmptyObject,
 
-  // Helpers
-  asyncHandler,
-  paginate,
+  // Cloudinary
+  uploadToCloudinary, uploadImageToCloudinary, deleteFromCloudinary, getCloudinary,
 
-  // Token
-  generateAccessToken,
-  generateRefreshToken,
-  setTokenCookies,
+  // Razorpay
+  createOrder, verifyPayment, getRazorpay,
 
-  // Database
-  connectDB,
+  // Stripe
+  createPaymentIntent, constructWebhookEvent, getStripe,
 
-  // Constants
-  constants,
+  // Gmail
+  sendGmail, sendOTPGmail, sendWelcomeGmail,
 
-  // Middleware
-  errorHandler,
-  protect,
-  checkRole,
-  globalLimiter,
-  authLimiter,
-  passwordResetLimiter,
+  // Brevo
+  sendBrevo, sendOTPBrevo, sendWelcomeBrevo,
 };

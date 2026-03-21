@@ -1,207 +1,430 @@
-# 😈 Devil Backend - Node.js
 
-A production-ready Node.js + Express + MongoDB backend boilerplate with JWT authentication, role-based access control, and scalable folder structure.
+# 😈 devil-backend-nodejs
+
+A production-ready Node.js + Express + MongoDB backend boilerplate CLI with built-in utilities for backend and frontend.
+
+[![npm version](https://img.shields.io/npm/v/devil-backend-nodejs.svg)](https://www.npmjs.com/package/devil-backend-nodejs)
+[![npm downloads](https://img.shields.io/npm/dm/devil-backend-nodejs.svg)](https://www.npmjs.com/package/devil-backend-nodejs)
+[![license](https://img.shields.io/npm/l/devil-backend-nodejs.svg)](https://github.com/Sachint122/devil-backend-nodejs/blob/main/LICENSE)
 
 ---
 
 ## 🚀 Quick Start
 
 ```bash
-# 1. Install dependencies
-npm install
+npx devil-backend-nodejs my-app
+```
 
-# 2. Setup environment variables
-cp .env.example .env
-# Fill in your values in .env
+## ⚡ With Flags (Skip Prompts)
 
-# 3. Start development server
-npm run dev
-
-# 4. Start production server
-npm start
+```bash
+npx devil-backend-nodejs my-app --cloudinary
+npx devil-backend-nodejs my-app --email-gmail
+npx devil-backend-nodejs my-app --email-brevo
+npx devil-backend-nodejs my-app --razorpay
+npx devil-backend-nodejs my-app --stripe
+npx devil-backend-nodejs my-app --docker
+npx devil-backend-nodejs my-app --cloudinary --email-brevo --razorpay --docker
+npx devil-backend-nodejs my-app --no-install
+npx devil-backend-nodejs --help
 ```
 
 ---
 
-## 📁 Project Structure
+## 🔧 CLI Flags
+
+| Flag | Description |
+|------|-------------|
+| `--cloudinary` | Add Cloudinary file upload + env variables |
+| `--email-gmail` | Add Gmail SMTP + env variables |
+| `--email-brevo` | Add Brevo email + env variables |
+| `--razorpay` | Add Razorpay payment + env variables |
+| `--stripe` | Add Stripe payment + env variables |
+| `--docker` | Add Docker + docker-compose support |
+| `--no-install` | Skip npm install |
+| `--help, -h` | Show help menu |
+
+---
+
+## 📁 Generated Project Structure
 
 ```
-project/
+my-app/
 ├── src/
 │   ├── config/
-│   │   ├── db.js               → MongoDB connection
-│   │   └── constants.js        → App-wide constants
+│   │   ├── db.js
+│   │   └── constants.js
 │   ├── controllers/
-│   │   └── authController.js   → Auth logic (register, login, etc.)
-│   ├── routes/
-│   │   ├── index.js            → Central route registrar
-│   │   └── authRoutes.js       → Auth routes
-│   ├── models/
-│   │   └── userModel.js        → User Mongoose schema
+│   │   └── authController.js
 │   ├── middleware/
-│   │   ├── authMiddleware.js        → JWT verify, protect route
-│   │   ├── roleCheckMiddleware.js   → Role-based access control
-│   │   ├── errorHandlerMiddleware.js→ Global error handler
-│   │   └── rateLimiter.js          → Rate limiting
+│   │   ├── authMiddleware.js
+│   │   ├── errorHandlerMiddleware.js
+│   │   ├── rateLimiter.js
+│   │   └── roleCheckMiddleware.js
+│   ├── models/
+│   │   └── userModel.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   └── index.js
 │   ├── utils/
-│   │   ├── ApiResponse.js      → Standardized success response
-│   │   ├── ApiError.js         → Custom error class
-│   │   └── generateToken.js    → JWT token generator & cookie setter
-│   ├── validators/
-│   │   └── authValidator.js    → Request validation rules
-│   ├── services/               → Business logic (add as needed)
-│   └── constants/              → Extra constants (add as needed)
-├── server.js                   → App entry point
-├── app.js                      → Express setup & middleware
-├── .env                        → Environment variables
-├── .env.example                → Environment variable template
-├── .gitignore                  → Git ignore rules
-└── README.md                   → Project documentation
+│   │   ├── ApiError.js
+│   │   ├── ApiResponse.js
+│   │   └── generateToken.js
+│   └── validators/
+│       └── authValidator.js
+├── app.js
+├── server.js
+├── .env
+└── package.json
 ```
 
 ---
 
-## 🔐 Auth API Routes
+## 📦 Install Package
 
-| Method | Route | Access | Description |
-|--------|-------|--------|-------------|
-| POST | `/api/auth/register` | Public | Register new user |
-| POST | `/api/auth/login` | Public | Login user |
-| POST | `/api/auth/logout` | Private | Logout user |
-| GET | `/api/auth/me` | Private | Get logged-in user |
-| POST | `/api/auth/refresh-token` | Public | Refresh access token |
-| POST | `/api/auth/forgot-password` | Public | Generate reset token |
-| POST | `/api/auth/reset-password/:token` | Public | Reset password |
-| PUT | `/api/auth/change-password` | Private | Change password |
-| PUT | `/api/auth/update-profile` | Private | Update profile |
+```bash
+npm install devil-backend-nodejs
+```
 
 ---
 
-## 🔑 JWT Strategy
-
-- **Access Token** → expires in `15m`, stored in `httpOnly` cookie + response body
-- **Refresh Token** → expires in `7d`, stored in `httpOnly` cookie + DB
-- On access token expiry → call `/api/auth/refresh-token` to get new one
-
----
-
-## 🛡️ Protecting Routes
+## 🛠️ Backend Utilities (CommonJS)
 
 ```js
-const { protect } = require('../middleware/authMiddleware');
-const checkRole = require('../middleware/roleCheckMiddleware');
-
-// Login required
-router.get('/profile', protect, getProfile);
-
-// Admin only
-router.delete('/user/:id', protect, checkRole('admin'), deleteUser);
-
-// Admin or Moderator
-router.put('/post/:id', protect, checkRole('admin', 'moderator'), updatePost);
+const {
+  asyncHandler,
+  paginate,
+  ApiError,
+  ApiResponse,
+  generateToken,
+  generateOTP,
+  randomString,
+  slugify,
+  capitalize,
+  capitalizeWords,
+  formatDate,
+  timeAgo,
+  pick,
+  exclude,
+  isEmptyObject,
+  calculatePagination,
+  validateEnv,
+} = require('devil-backend-nodejs');
 ```
+
+| Utility | Description | Example |
+|---------|-------------|---------|
+| `asyncHandler` | Wrap async controllers | `asyncHandler(async (req, res) => {})` |
+| `paginate` | MongoDB pagination | `await paginate(Model, query, { page, limit })` |
+| `ApiError` | Standard error class | `new ApiError(404, 'Not found')` |
+| `ApiResponse` | Standard response class | `new ApiResponse(200, data, 'Success')` |
+| `generateToken` | Generate JWT token | `generateToken(userId)` |
+| `generateOTP` | 6 digit OTP | `generateOTP()` |
+| `randomString` | Random string | `randomString(32)` |
+| `slugify` | Text to URL slug | `slugify('Hello World')` → `hello-world` |
+| `capitalize` | Capitalize string | `capitalize('hello')` → `Hello` |
+| `capitalizeWords` | Capitalize all words | `capitalizeWords('hello world')` |
+| `formatDate` | Format date | `formatDate(new Date())` → `21 Mar 2026` |
+| `timeAgo` | Relative time | `timeAgo('2026-03-20')` → `1 day ago` |
+| `pick` | Pick object fields | `pick(req.body, ['name', 'email'])` |
+| `exclude` | Exclude object fields | `exclude(user, ['password'])` |
+| `isEmptyObject` | Check empty object | `isEmptyObject({})` → `true` |
+| `calculatePagination` | Pagination meta | `calculatePagination(100, 2, 10)` |
+| `validateEnv` | Validate env vars | `validateEnv(['JWT_SECRET', 'MONGO_URI'])` |
 
 ---
 
-## 📦 ApiResponse Usage
+## ☁️ Cloudinary Helper
+
+Set env variables:
+```env
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+```
 
 ```js
-// String response
-res.status(200).json(new ApiResponse(200, 'Deleted successfully'));
+const {
+  uploadToCloudinary,
+  uploadImageToCloudinary,
+  deleteFromCloudinary,
+  getCloudinary,
+} = require('devil-backend-nodejs');
 
-// Object response (spreads all properties)
-res.status(200).json(new ApiResponse(200, { message: 'Success', user, token }));
+// File upload (pdf, doc etc)
+const file = await uploadToCloudinary(
+  req.file.buffer,
+  req.file.originalname,
+  req.file.mimetype,
+  'documents'   // folder name
+);
+
+// Image upload
+const img = await uploadImageToCloudinary(
+  req.file.buffer,
+  req.file.originalname,
+  req.file.mimetype,
+  'avatars'
+);
+
+// Delete
+await deleteFromCloudinary(publicId);
+
+// Returns
+// { url, publicId, name }
 ```
 
 ---
 
-## ❌ ApiError Usage
+## 💳 Razorpay Helper
+
+Set env variables:
+```env
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+```
 
 ```js
-// Simple error
-throw new ApiError(404, 'User not found');
+const { createOrder, verifyPayment, getRazorpay } = require('devil-backend-nodejs');
 
-// Array of errors
-throw new ApiError(400, ['Email is required', 'Password is required']);
+// Create order
+const order = await createOrder(499, 'INR');
 
-// Error with message + array
-throw new ApiError(400, 'Validation failed', ['Email is required']);
+// Verify payment
+const isValid = verifyPayment(orderId, paymentId, signature);
 
-// Object errors
-throw new ApiError(400, { email: 'Email already exists' });
+// Raw instance
+const razorpay = getRazorpay();
 ```
 
 ---
 
-## 📄 Pagination Usage
+## 💳 Stripe Helper
+
+Set env variables:
+```env
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+```
 
 ```js
-const { paginate } = require('devil-backend-nodejs');
+const { createPaymentIntent, constructWebhookEvent, getStripe } = require('devil-backend-nodejs');
 
-const result = await paginate(User, { role: 'user' }, req.query);
+// Create payment intent
+const intent = await createPaymentIntent(499, 'inr');
 
-// req.query supports:
-// ?page=1&limit=10&sort=-createdAt
+// Verify webhook
+const event = constructWebhookEvent(req.body, req.headers['stripe-signature']);
 
-// Returns:
-// {
-//   data: [...],
-//   currentPage: 1,
-//   totalPages: 5,
-//   totalItems: 48,
-//   hasNextPage: true,
-//   hasPrevPage: false,
-//   limit: 10
-// }
+// Raw instance
+const stripe = getStripe();
 ```
 
 ---
 
-## ⚙️ Environment Variables
+## 📧 Gmail Helper
 
-| Variable | Description |
-|----------|-------------|
-| `PORT` | Server port (default: 5000) |
-| `NODE_ENV` | Environment (development/production) |
-| `MONGO_URI` | MongoDB connection string |
-| `JWT_SECRET` | JWT secret key |
-| `JWT_EXPIRES_IN` | JWT expiry (default: 7d) |
-| `FRONTEND_URL` | Frontend URL for CORS |
+Set env variables:
+```env
+GMAIL_USER=
+GMAIL_PASS=
+```
 
----
+```js
+const { sendGmail, sendOTPGmail, sendWelcomeGmail } = require('devil-backend-nodejs');
 
-## 📦 Dependencies
+// Custom email
+await sendGmail('user@gmail.com', 'Subject', '<h1>Hello!</h1>');
 
-| Package | Purpose |
-|---------|---------|
-| `express` | Web framework |
-| `mongoose` | MongoDB ODM |
-| `dotenv` | Environment variables |
-| `jsonwebtoken` | JWT auth |
-| `bcryptjs` | Password hashing |
-| `express-rate-limit` | Rate limiting |
-| `express-validator` | Request validation |
-| `cors` | Cross-Origin requests |
-| `helmet` | Secure HTTP headers |
-| `cookie-parser` | Cookie parsing |
-| `compression` | Gzip compression |
-| `hpp` | HTTP parameter pollution prevention |
-| `multer` | File uploads |
-| `morgan` | HTTP request logger |
+// OTP email
+await sendOTPGmail('user@gmail.com', '123456');
 
----
-
-## 🔧 Scripts
-
-```json
-"scripts": {
-  "start": "node server.js",
-  "dev": "nodemon server.js"
-}
+// Welcome email
+await sendWelcomeGmail('user@gmail.com', 'Sachin');
 ```
 
 ---
 
-## 👨‍💻 Author
+## 📧 Brevo Helper
 
-Built with 😈 by **Sachin Tiwari**
+Set env variables:
+```env
+BREVO_API_KEY=
+BREVO_SENDER_EMAIL=
+BREVO_SENDER_NAME=
+```
+
+```js
+const { sendBrevo, sendOTPBrevo, sendWelcomeBrevo } = require('devil-backend-nodejs');
+
+// Custom email
+await sendBrevo('user@gmail.com', 'Subject', '<h1>Hello!</h1>');
+
+// OTP email
+await sendOTPBrevo('user@gmail.com', '123456');
+
+// Welcome email
+await sendWelcomeBrevo('user@gmail.com', 'Sachin');
+```
+
+---
+
+## 🌐 Frontend Hooks (ESM — React / Next.js / Vite)
+
+```js
+import {
+  useApi,
+  useOptimistic,
+  useFetch,
+  useDebounce,
+  useInfiniteScroll,
+  useToggle,
+  useClickOutside,
+} from 'devil-backend-nodejs';
+```
+
+---
+
+### `useApi` — API Calls
+
+```js
+const { get, post, patch, put, del } = useApi('http://localhost:5000/api');
+
+await get('/users');
+await post('/users', { name: 'Sachin' });
+await patch('/users/123', { status: 'active' });
+await del('/users/123');
+```
+
+---
+
+### `useOptimistic` — Optimistic UI
+
+UI pehle update hoti hai, API baad mein. Fail hone par revert!
+
+```js
+const { data: cart, optimisticUpdate } = useOptimistic(initialCart);
+
+// Update
+await optimisticUpdate(
+  id,
+  { quantity: 2 },
+  () => patch(`/cart/${id}`, { quantity: 2 })
+);
+
+// Delete
+await optimisticUpdate(
+  id,
+  null,
+  () => del(`/cart/${id}`)
+);
+```
+
+---
+
+### `useFetch` — Auto Fetch on Mount
+
+```js
+const { data, loading, error, refetch } = useFetch('/users');
+
+if (loading) return <p>Loading...</p>
+if (error)   return <p>{error}</p>
+
+return <button onClick={refetch}>🔄 Refresh</button>
+```
+
+---
+
+### `useDebounce` — Debounced Function
+
+```js
+const [search, setSearch] = useState('');
+
+const handleSearch = useDebounce(async (query) => {
+  const data = await get(`/users?search=${query}`);
+}, 500);
+
+<input
+  value={search}
+  onChange={(e) => {
+    setSearch(e.target.value);
+    handleSearch(e.target.value);
+  }}
+/>
+```
+
+---
+
+### `useInfiniteScroll` — Infinite Scroll
+
+```js
+const [posts, setPosts] = useState([]);
+
+const { loading, hasMore, lastElementRef } = useInfiniteScroll(
+  '/posts',   // url
+  setPosts,   // apna setState
+  10          // limit (optional, default 10)
+);
+
+return (
+  <div>
+    {posts.map((post, i) => (
+      <div
+        key={post._id}
+        ref={i === posts.length - 1 ? lastElementRef : null}
+      >
+        {post.title}
+      </div>
+    ))}
+    {loading  && <p>⏳ Loading...</p>}
+    {!hasMore && <p>✅ Sab load ho gaya!</p>}
+  </div>
+);
+```
+
+---
+
+### `useToggle` — Toggle State
+
+```js
+const { state: isOpen, toggle, open, close } = useToggle();
+
+<button onClick={open}>Open</button>
+{isOpen && <div>Dialog!</div>}
+<button onClick={close}>Close</button>
+```
+
+---
+
+### `useClickOutside` — Click Outside to Close
+
+```js
+const { state: isOpen, open, close } = useToggle();
+const { patch } = useApi('http://localhost:5000/api');
+
+const { ref } = useClickOutside(close, {
+  apiFn:      () => patch(`/events/${id}`, { status }),
+  setData:    setStatus,
+  revertData: prevStatus,
+});
+
+{isOpen && (
+  <div ref={ref} className="dialog">
+    Dialog content here...
+  </div>
+)}
+```
+
+---
+
+## 👤 Author
+
+**Sachin Tiwari**
+- GitHub: [@Sachint122](https://github.com/Sachint122)
+- npm: [devil-backend-nodejs](https://www.npmjs.com/package/devil-backend-nodejs)
+
+---
+
+## 📄 License
+
+MIT © Sachin Tiwari
