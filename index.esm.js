@@ -19,6 +19,8 @@ export { isEmptyObject } from './src/utils/isEmptyObject.js';
 
 // ── Frontend Helpers ──
 export { useApi } from './src/helpers/useApi.js';
+export { configureApi, clearToken, updateToken } from './src/helpers/apiConfig.js';
+export { ApiProvider } from './src/helpers/ApiProvider.jsx';
 export { useOptimistic } from './src/helpers/useOptimistic.js';
 
 export { useFetch } from './src/helpers/useFetch.js';
