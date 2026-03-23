@@ -50,7 +50,7 @@ export function createOrder(amount: number, currency?: string): Promise<any>;
 export function verifyPayment(orderId: string, paymentId: string, signature: string): boolean;
 export function getRazorpay(): any;
 
-// ─── Brevo Email ─────────────────────────────────────
+// ─── Brevo ───────────────────────────────────────────
 export function sendBrevo(to: string, subject: string, html: string): Promise<void>;
 export function sendOTPBrevo(to: string, otp: string): Promise<void>;
 export function sendWelcomeBrevo(to: string, name: string): Promise<void>;
@@ -62,12 +62,28 @@ export function sendWelcomeGmail(to: string, name: string): Promise<void>;
 
 // ─── Frontend Hooks ──────────────────────────────────
 export function useApi(baseURL: string): {
-  get:   (url: string, config?: object) => Promise<any>;
-  post:  (url: string, data?: object, config?: object) => Promise<any>;
-  put:   (url: string, data?: object, config?: object) => Promise<any>;
+  get: (url: string, config?: object) => Promise<any>;
+  post: (url: string, data?: object, config?: object) => Promise<any>;
+  put: (url: string, data?: object, config?: object) => Promise<any>;
   patch: (url: string, data?: object, config?: object) => Promise<any>;
-  del:   (url: string, config?: object) => Promise<any>;
+  del: (url: string, config?: object) => Promise<any>;
 };
+
+export function configureApi(config: {
+  baseURL: string;
+  token?: string;
+  withCredentials?: boolean;
+}): void;
+
+export function clearToken(): void;
+export function updateToken(token: string): void;
+
+export function ApiProvider(props: {
+  baseURL: string;
+  children: any;
+  token?: string;
+  withCredentials?: boolean;
+}): any;
 
 export function useFetch(url: string): {
   data: any;

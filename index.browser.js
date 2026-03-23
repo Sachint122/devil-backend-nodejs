@@ -1,0 +1,78 @@
+{
+    "name": "devil-backend-nodejs",
+    "version": "3.0.5",
+    "description": "A production-ready Node.js + Express + MongoDB backend boilerplate CLI",
+    "main": "index.js",
+    "module": "index.esm.js",
+    "browser": "index.browser.js",
+    "types": "./index.d.ts",
+    "exports": {
+        ".": {
+            "browser": "./index.browser.js",
+            "require": "./index.js",
+            "import": "./index.esm.js",
+            "types": "./index.d.ts"
+        }
+    },
+    "bin": {
+        "devil-backend-nodejs": "bin/cli.js"
+    },
+    "scripts": {
+        "start": "node server.js",
+        "dev": "nodemon server.js"
+    },
+    "keywords": [
+        "nodejs",
+        "express",
+        "mongodb",
+        "mongoose",
+        "jwt",
+        "backend",
+        "boilerplate",
+        "cli",
+        "mern",
+        "scaffold",
+        "react",
+        "nextjs",
+        "vite",
+        "utilities",
+        "helpers"
+    ],
+    "author": "Sachin Tiwari",
+    "license": "MIT",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cloudinary": "^2.9.0",
+        "compression": "^1.7.4",
+        "cookie-parser": "^1.4.6",
+        "cors": "^2.8.5",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "express-rate-limit": "^7.1.5",
+        "express-validator": "^7.0.1",
+        "helmet": "^7.1.0",
+        "hpp": "^0.2.3",
+        "inquirer": "^8.2.7",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^7.6.3",
+        "morgan": "^1.10.0",
+        "multer": "^1.4.5-lts.1",
+        "nodemailer": "^6.9.7"
+    },
+    "devDependencies": {
+        "cross-env": "^7.0.3",
+        "nodemon": "^3.0.2"
+    },
+    "peerDependencies": {
+        "axios": "^1.0.0",
+        "react": ">=17.0.0"
+    },
+    "peerDependenciesMeta": {
+        "axios": {
+            "optional": true
+        },
+        "react": {
+            "optional": true
+        }
+    }
+}
