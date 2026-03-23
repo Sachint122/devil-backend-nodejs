@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const inquirer = require('inquirer');
 const fs = require('fs');
 const path = require('path');
@@ -56,7 +58,7 @@ EXAMPLES:
   npx devil-backend-nodejs my-app
   npx devil-backend-nodejs my-app --cloudinary
   npx devil-backend-nodejs my-app --email-brevo --razorpay
-  npx devil-backend-nodejs my-app --cloudinary --email-gmail --razorpay --docker
+  npx devil-backend-nodejs my-app --cloudinary --email-brevo --razorpay --docker
 `);
 }
 
@@ -81,21 +83,37 @@ async function main() {
       default: 'my-devil-app',
       validate: (input) => input.trim() !== '' || 'Project name cannot be empty!'
     }]);
-    projectName = answer.projectName;
+    projectName = answer.projectName.trim();
   }
 
-  // ── Interactive mode agar koi flag nahi ──
-  let answers = {
-    cloudinary: cliOptions.cloudinary,
-    emailProvider: cliOptions.emailProvider,
-    paymentProvider: cliOptions.paymentProvider,
-    docker: cliOptions.docker,
-  };
+  // ✅ FIX — hasFlags pehle check karo
+  const hasFlags =
+    cliOptions.cloudinary ||
+    cliOptions.emailProvider !== null ||
+    cliOptions.paymentProvider !== null ||
+    cliOptions.docker;
 
-  const hasFlags = cliOptions.cloudinary || cliOptions.emailProvider ||
-    cliOptions.paymentProvider || cliOptions.docker;
+  // ✅ FIX — answers seedha cliOptions se lo jab flags ho
+  let answers;
 
-  if (!hasFlags) {
+  if (hasFlags) {
+    // Flags mode — no prompts, directly use CLI options
+    answers = {
+      cloudinary: cliOptions.cloudinary,
+      emailProvider: cliOptions.emailProvider,
+      paymentProvider: cliOptions.paymentProvider,
+      docker: cliOptions.docker,
+    };
+
+    // Show summary of what will be generated
+    console.log('📋 Configuration from flags:');
+    console.log(`   Cloudinary : ${answers.cloudinary ? '✅' : '❌'}`);
+    console.log(`   Email      : ${answers.emailProvider ?? 'None'}`);
+    console.log(`   Payment    : ${answers.paymentProvider ?? 'None'}`);
+    console.log(`   Docker     : ${answers.docker ? '✅' : '❌'}\n`);
+
+  } else {
+    // Interactive mode — ask prompts
     answers = await inquirer.prompt([
       {
         type: 'confirm',
@@ -146,6 +164,8 @@ async function main() {
       console.log('❌ Cancelled.');
       process.exit(0);
     }
+    // ✅ Clean existing folder before overwrite
+    fs.rmSync(targetDir, { recursive: true, force: true });
   }
 
   console.log(`\n==================================================`);
@@ -162,8 +182,14 @@ async function main() {
   if (answers.docker) {
     const dockerSrc = path.join(TEMPLATES_DIR, 'docker');
     if (fs.existsSync(dockerSrc)) {
-      fs.copyFileSync(path.join(dockerSrc, 'Dockerfile'), path.join(targetDir, 'Dockerfile'));
-      fs.copyFileSync(path.join(dockerSrc, 'docker-compose.yml'), path.join(targetDir, 'docker-compose.yml'));
+      fs.copyFileSync(
+        path.join(dockerSrc, 'Dockerfile'),
+        path.join(targetDir, 'Dockerfile')
+      );
+      fs.copyFileSync(
+        path.join(dockerSrc, 'docker-compose.yml'),
+        path.join(targetDir, 'docker-compose.yml')
+      );
       console.log('✅ Docker support added!');
     }
   }
@@ -182,16 +208,20 @@ async function main() {
   if (!cliOptions.noInstall) {
     console.log('\n📦 Installing dependencies...');
     console.log('⏳ This may take a minute...\n');
-    execSync('npm install', { cwd: targetDir, stdio: 'inherit' });
-    console.log(`\n==================================================`);
-    console.log(`✅ All dependencies installed!`);
-    console.log(`==================================================`);
+    try {
+      execSync('npm install', { cwd: targetDir, stdio: 'inherit' });
+      console.log(`\n==================================================`);
+      console.log(`✅ All dependencies installed!`);
+      console.log(`==================================================`);
+    } catch (err) {
+      console.error('❌ npm install failed:', err.message);
+    }
   }
 
   console.log(`\n🎉 Project "${projectName}" created successfully!\n`);
   console.log(`👉 Next steps:`);
   console.log(`   cd ${projectName}`);
-  console.log(`   Update your .env file with your values`);
+  console.log(`   Update your .env file with your credentials`);
   console.log(`   npm run dev\n`);
   console.log(`😈 Happy coding with devil-backend-nodejs!`);
   console.log(`==================================================\n`);
@@ -204,7 +234,9 @@ function copyDir(src, dest) {
   for (const entry of entries) {
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
-    entry.isDirectory() ? copyDir(srcPath, destPath) : fs.copyFileSync(srcPath, destPath);
+    entry.isDirectory()
+      ? copyDir(srcPath, destPath)
+      : fs.copyFileSync(srcPath, destPath);
   }
 }
 
@@ -224,7 +256,7 @@ function generatePackageJson(targetDir, projectName, answers) {
     "compression": "^1.7.4",
     "hpp": "^0.2.3",
     "morgan": "^1.10.0",
-    "devil-backend-nodejs": "latest"
+    "devil-backend-nodejs": "latest",
   };
 
   if (answers.cloudinary) {
@@ -251,28 +283,37 @@ function generatePackageJson(targetDir, projectName, answers) {
     main: "server.js",
     scripts: {
       start: "node server.js",
-      dev: "nodemon server.js"
+      dev: "nodemon server.js",
     },
     dependencies: deps,
-    devDependencies: {
-      "nodemon": "^3.0.2"
-    }
+    devDependencies: { "nodemon": "^3.0.2" },
   };
 
-  fs.writeFileSync(path.join(targetDir, 'package.json'), JSON.stringify(pkg, null, 2));
+  fs.writeFileSync(
+    path.join(targetDir, 'package.json'),
+    JSON.stringify(pkg, null, 2)
+  );
 }
 
 // ─── Helper: Generate .env ────────────────────────────────
 function generateEnv(targetDir, projectName, answers) {
-  let env = `PORT=5000
+  // ✅ FIX — debug log to confirm values
+  console.log('   → emailProvider  :', answers.emailProvider);
+  console.log('   → paymentProvider:', answers.paymentProvider);
+  console.log('   → cloudinary     :', answers.cloudinary);
+
+  let env =
+    `PORT=5000
 NODE_ENV=development
 MONGO_URI=mongodb://localhost:27017/${projectName}
 JWT_SECRET=your_jwt_secret_here
 JWT_EXPIRE=7d
+CLIENT_URL=http://localhost:5173
 `;
 
   if (answers.cloudinary) {
-    env += `
+    env +=
+      `
 # Cloudinary
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
@@ -281,7 +322,8 @@ CLOUDINARY_API_SECRET=
   }
 
   if (answers.emailProvider === 'gmail') {
-    env += `
+    env +=
+      `
 # Gmail
 GMAIL_USER=
 GMAIL_PASS=
@@ -289,7 +331,8 @@ GMAIL_PASS=
   }
 
   if (answers.emailProvider === 'brevo') {
-    env += `
+    env +=
+      `
 # Brevo
 BREVO_API_KEY=
 BREVO_SENDER_EMAIL=
@@ -298,7 +341,8 @@ BREVO_SENDER_NAME=
   }
 
   if (answers.paymentProvider === 'razorpay') {
-    env += `
+    env +=
+      `
 # Razorpay
 RAZORPAY_KEY_ID=
 RAZORPAY_KEY_SECRET=
@@ -306,7 +350,8 @@ RAZORPAY_KEY_SECRET=
   }
 
   if (answers.paymentProvider === 'stripe') {
-    env += `
+    env +=
+      `
 # Stripe
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
@@ -314,7 +359,8 @@ STRIPE_WEBHOOK_SECRET=
   }
 
   if (answers.docker) {
-    env += `
+    env +=
+      `
 # Docker
 MONGO_ROOT_USERNAME=admin
 MONGO_ROOT_PASSWORD=password
