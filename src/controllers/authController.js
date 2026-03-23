@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const User = require('../models/userModel');
-const asyncHandler = require('../helpers/asyncHandler');
+const { asyncHandler } = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
 const { generateAccessToken, generateRefreshToken, setTokenCookies } = require('../utils/generateToken');
