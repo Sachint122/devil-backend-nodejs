@@ -1,6 +1,6 @@
 {
   "name": "devil-backend-nodejs",
-  "version": "3.0.5",
+  "version": "4.0.0",
   "description": "A production-ready Node.js + Express + MongoDB backend boilerplate CLI",
   "main": "index.js",
   "module": "index.esm.js",
