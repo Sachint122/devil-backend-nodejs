@@ -1,6 +1,6 @@
 {
   "name": "devil-backend-nodejs",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "description": "A production-ready Node.js + Express + MongoDB backend boilerplate CLI",
   "main": "index.js",
   "module": "index.esm.js",
@@ -12,7 +12,7 @@
     }
   },
   "bin": {
-    "devil-backend-nodejs": "bin/cli.js"
+    "devil-backend-nodejs": "./bin/cli.js"
   },
   "repository": {
     "type": "git",
@@ -47,7 +47,6 @@
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "cloudinary": "^2.9.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -60,9 +59,7 @@
     "inquirer": "^8.2.7",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.3",
-    "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.7"
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
@@ -70,13 +67,37 @@
   },
   "peerDependencies": {
     "axios": "^1.0.0",
-    "react": ">=17.0.0"
+    "react": ">=17.0.0",
+    "razorpay": "^2.9.2",
+    "stripe": "^14.0.0",
+    "cloudinary": "^2.9.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.7",
+    "@getbrevo/brevo": "^2.0.0"
   },
   "peerDependenciesMeta": {
     "axios": {
       "optional": true
     },
     "react": {
+      "optional": true
+    },
+    "razorpay": {
+      "optional": true
+    },
+    "stripe": {
+      "optional": true
+    },
+    "cloudinary": {
+      "optional": true
+    },
+    "multer": {
+      "optional": true
+    },
+    "nodemailer": {
+      "optional": true
+    },
+    "@getbrevo/brevo": {
       "optional": true
     }
   }
