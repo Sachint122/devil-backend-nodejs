@@ -15,9 +15,13 @@ class ApiResponse {
     if (typeof responseData === 'string') {
       this.message = responseData;
     }
-    // If responseData is an object, spread all properties
+    // If responseData is an object, handle array or spread
     else if (responseData && typeof responseData === 'object') {
-      Object.assign(this, responseData);
+      if (Array.isArray(responseData)) {
+        this.data = responseData;
+      } else {
+        Object.assign(this, responseData);
+      }
     }
   }
 }

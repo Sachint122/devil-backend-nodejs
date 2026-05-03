@@ -1,10 +1,20 @@
-﻿let stripe = null;
+let stripe = null;
 
-if (process.env.STRIPE_SECRET_KEY) {
-  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-}
+const getStripeInstance = () => {
+  if (!stripe) {
+    try {
+      if (process.env.STRIPE_SECRET_KEY) {
+        stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+      }
+    } catch (e) {
+      throw new Error('Stripe package not found! Please install it using: npm install stripe');
+    }
+  }
+  return stripe;
+};
 
 const check = () => {
+  getStripeInstance();
   if (!stripe) throw new Error('Stripe not configured! Set STRIPE_SECRET_KEY.');
 };
 

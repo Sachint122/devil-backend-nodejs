@@ -1,15 +1,23 @@
-﻿const SibApiV3Sdk = require('sib-api-v3-sdk');
-
+let SibApiV3Sdk = null;
 let apiInstance = null;
 
-if (process.env.BREVO_API_KEY) {
-  const defaultClient = SibApiV3Sdk.ApiClient.instance;
-  defaultClient.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
-  apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-}
+const getApiInstance = () => {
+  if (!apiInstance && process.env.BREVO_API_KEY) {
+    try {
+      SibApiV3Sdk = require('sib-api-v3-sdk');
+      const defaultClient = SibApiV3Sdk.ApiClient.instance;
+      defaultClient.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+      apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    } catch (e) {
+      throw new Error('sib-api-v3-sdk package not found! Please install it using: npm install sib-api-v3-sdk');
+    }
+  }
+  return apiInstance;
+};
 
 const sendEmail = async (to, subject, htmlContent) => {
-  if (!apiInstance) {
+  const currentApiInstance = getApiInstance();
+  if (!currentApiInstance) {
     console.log(`📧 [SKIPPED] Email to ${to}: ${subject}`);
     return { message: 'Email skipped - BREVO_API_KEY not set' };
   }
@@ -24,7 +32,7 @@ const sendEmail = async (to, subject, htmlContent) => {
     mail.subject = subject;
     mail.htmlContent = htmlContent;
 
-    const result = await apiInstance.sendTransacEmail(mail);
+    const result = await currentApiInstance.sendTransacEmail(mail);
     return result;
   } catch (error) {
     console.error('❌ Brevo email error:', error.message);

@@ -1,25 +1,32 @@
-﻿const nodemailer = require('nodemailer');
-
 let transporter = null;
 
-if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
-  transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_PASS,
-    },
-  });
-}
+const getTransporter = () => {
+  if (!transporter && process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+    try {
+      const nodemailer = require('nodemailer');
+      transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_PASS,
+        },
+      });
+    } catch (e) {
+      throw new Error('Nodemailer package not found! Please install it using: npm install nodemailer');
+    }
+  }
+  return transporter;
+};
 
 const sendEmail = async (to, subject, html) => {
-  if (!transporter) {
+  const currentTransporter = getTransporter();
+  if (!currentTransporter) {
     console.log(`📧 [SKIPPED] Email to ${to}: ${subject}`);
     return { message: 'Email skipped - GMAIL_USER or GMAIL_PASS not set' };
   }
 
   try {
-    const result = await transporter.sendMail({
+    const result = await currentTransporter.sendMail({
       from: process.env.GMAIL_USER,
       to, subject, html,
     });

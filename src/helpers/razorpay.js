@@ -1,16 +1,27 @@
-﻿const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
+let Razorpay;
 let instance = null;
 
-if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
-  instance = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-  });
-}
+const getRazorpayInstance = () => {
+  if (!instance) {
+    try {
+      Razorpay = require('razorpay');
+      if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+        instance = new Razorpay({
+          key_id: process.env.RAZORPAY_KEY_ID,
+          key_secret: process.env.RAZORPAY_KEY_SECRET,
+        });
+      }
+    } catch (e) {
+      throw new Error('Razorpay package not found! Please install it using: npm install razorpay');
+    }
+  }
+  return instance;
+};
 
 const check = () => {
+  getRazorpayInstance();
   if (!instance) throw new Error('Razorpay not configured! Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.');
 };
 
